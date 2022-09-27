@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import lombok.*;
-import model.enums.PlayListCategory;
+import com.joysbrightt.musicrendering.model.enums.PlayListCategory;
 
 import java.time.LocalDate;
 

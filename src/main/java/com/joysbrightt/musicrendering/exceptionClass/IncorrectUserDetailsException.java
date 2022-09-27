@@ -3,11 +3,11 @@ package com.joysbrightt.musicrendering.exceptionClass;
 import lombok.Getter;
 
 @Getter
-public class MusicRenderingException extends  RuntimeException{
+public class IncorrectUserDetailsException {
 
     private String message;
 
-    public MusicRenderingException(String message) {
+    public IncorrectUserDetailsException(String message) {
         this.message = message;
     }
 }

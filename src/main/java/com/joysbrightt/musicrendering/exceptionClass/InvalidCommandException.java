@@ -3,11 +3,10 @@ package com.joysbrightt.musicrendering.exceptionClass;
 import lombok.Getter;
 
 @Getter
-public class MusicRenderingException extends  RuntimeException{
-
+public class InvalidCommandException {
     private String message;
 
-    public MusicRenderingException(String message) {
+    public InvalidCommandException(String message) {
         this.message = message;
     }
 }
