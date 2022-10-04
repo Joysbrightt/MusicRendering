@@ -4,13 +4,11 @@ import com.joysbrightt.musicrendering.dtos.request.AddSongRequest;
 import com.joysbrightt.musicrendering.dtos.response.AddSongResponse;
 import com.joysbrightt.musicrendering.exceptionClass.MusicRenderingException;
 import com.joysbrightt.musicrendering.model.Songs;
-import com.joysbrightt.musicrendering.model.User;
 import com.joysbrightt.musicrendering.repository.SongsRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Slf4j
@@ -43,17 +41,29 @@ public class SongsServiceImpl implements SongsService {
     }
 
     @Override
-    public User removeSongs(Long songId) {
-        Optional<Songs> songs = songsRepository.findById(songId);
-        if (songs.get().getSongsId().equals(songId))
-            songsRepository.deleteById(songs.get().getSongsId());
+    public void removeSongs(Long songId) {
+        Songs song = songsRepository.findById(songId).orElseThrow(()-> new MusicRenderingException("Song not found!"));
+        songsRepository.delete(song);
+//        if (songs.get().getSongsId().equals(songId))
+//            songsRepository.deleteById(songs.get().getSongsId());
 //        User.builder().songs(songId.intValue()).build();
-        countSongsBySongsId(songSize);
-        return null;
+        countNumberOfSongs();
     };
         @Override
-    public Songs showSongs(List<Songs> songsList) {
-        return null;
+    public List<Songs> showSong() {
+            List<Songs> songs = songsRepository.findAll();
+            if(songs.isEmpty()){
+                throw new RuntimeException("No song found!");
+            }
+            return songs;
+//            try {
+//                Optional<Songs> songs = songsRepository.findAll().add(songsList)
+//            } catch (Exception e) {
+//                throw new RuntimeException(e);
+//            } {
+//                return songsList;
+//            }
+//        return null;
     }
 
     @Override
@@ -62,8 +72,7 @@ public class SongsServiceImpl implements SongsService {
     }
 
     @Override
-    public int countSongsBySongsId(int songSize) {
-
-        return songSize;
+    public Long countNumberOfSongs() {
+        return songsRepository.count();
     }
 }

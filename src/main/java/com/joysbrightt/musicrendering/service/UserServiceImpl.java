@@ -3,13 +3,17 @@ package com.joysbrightt.musicrendering.service;
 import com.joysbrightt.musicrendering.dtos.request.DeleteUserAcct;
 import com.joysbrightt.musicrendering.dtos.request.RegisterUserRequest;
 import com.joysbrightt.musicrendering.dtos.request.UserLoginRequest;
+import com.joysbrightt.musicrendering.dtos.request.VerificationMessage;
 import com.joysbrightt.musicrendering.dtos.response.RegisterUserResponse;
 import com.joysbrightt.musicrendering.dtos.response.UserLoginResponse;
+import com.joysbrightt.musicrendering.events.SendMessageEvent;
 import com.joysbrightt.musicrendering.exceptionClass.MusicRenderingException;
 import com.joysbrightt.musicrendering.model.User;
 import com.joysbrightt.musicrendering.repository.UserRepository;
 import com.mongodb.internal.bulk.DeleteRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,9 +26,11 @@ import java.util.stream.IntStream;
 public class UserServiceImpl implements UserService{
 
     private final UserRepository userRepository;
+    private ApplicationEventPublisher applicationEventPublisher;
 
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(UserRepository userRepository, ApplicationEventPublisher applicationEventPublisher) {
         this.userRepository = userRepository;
+        this.applicationEventPublisher = applicationEventPublisher;
     }
 
     @Override
@@ -40,6 +46,16 @@ public class UserServiceImpl implements UserService{
                 .password(registerRequest.getPassword())
                 .build();
          userRepository.save(newUser);
+        VerificationMessage verificationMessage = VerificationMessage.builder()
+                .userFullName(user.getFirstName() +" " + user.getLastName())
+                .subject("email verification from music player")
+                .receiver(user.getEmail())
+                .sender("oluwatomisinoladoyin@gmail.com")
+                .build();
+
+        SendMessageEvent sendMessageEvent = new SendMessageEvent(verificationMessage);
+        applicationEventPublisher.publishEvent(sendMessageEvent);
+
 
         return RegisterUserResponse.builder()
                 .isSuccess(true)
